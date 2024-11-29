@@ -1,57 +1,41 @@
-const sheetID = "1itKcj2L9HyA0GBIFcRTeQ8-OiIOI5eqw23-vvgXI5pQ"; // Replace with your sheet ID
-const sheetRange = "A2:I"; // Adjust if necessary
-const apiKey = "YOUR_API_KEY"; // Replace with your Google API key
+const sheetID = "1itKcj2L9HyA0GBIFcRTeQ8-OiIOI5eqw23-vvgXI5pQ"; // Remplace par ton ID Google Sheet
+const sheetRange = "A2:I"; // Vérifie que le range correspond bien à tes données
+const apiKey = "YOUR_API_KEY"; // Remplace par ta clé API Google
 
+// Fonction pour récupérer les données du Google Sheet
 async function fetchData() {
   const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetID}/values/${sheetRange}?key=${apiKey}`;
   const response = await fetch(url);
   const data = await response.json();
-  return data.values;
+  return data.values; // Retourne les lignes des données
 }
 
+// Fonction pour afficher les jeux dans la galerie
 function displayGames(games) {
   const gallery = document.getElementById("gallery");
-  gallery.innerHTML = ""; // Clear previous results
+  gallery.innerHTML = ""; // Vide la galerie avant de l'afficher
 
   games.forEach(game => {
+    // Déstructure les colonnes pour une lecture plus simple
     const [name, time, players, mechanism, recap, boxImg, rules, img, review] = game;
 
+    // Crée un élément pour chaque jeu
     const card = document.createElement("div");
     card.className = "card";
 
+    // HTML pour une carte de jeu
     card.innerHTML = `
       <h3>${name}</h3>
-      <img src="${img || boxImg}" alt="${name}">
+      <img src="${img || boxImg || 'https://via.placeholder.com/150'}" alt="${name}">
       <p><strong>Mécanisme:</strong> ${mechanism}</p>
       <p><strong>Temps de jeu:</strong> ${time}</p>
       <p><strong>Nombre de joueurs:</strong> ${players}</p>
       <a href="${rules}" target="_blank">Voir les règles</a>
     `;
+
+    // Ajoute la carte dans la galerie
     gallery.appendChild(card);
   });
 }
 
-document.getElementById("searchBtn").addEventListener("click", async () => {
-  const games = await fetchData();
-
-  const nameFilter = document.getElementById("searchName").value.toLowerCase();
-  const mechanismFilter = document.getElementById("searchMechanism").value.toLowerCase();
-  const playersFilter = document.getElementById("searchPlayers").value;
-  const timeFilter = document.getElementById("searchTime").value;
-
-  const filteredGames = games.filter(game => {
-    const [name, time, players, mechanism] = game;
-
-    return (
-      (!nameFilter || name.toLowerCase().includes(nameFilter)) &&
-      (!mechanismFilter || mechanism.toLowerCase().includes(mechanismFilter)) &&
-      (!playersFilter || players.includes(playersFilter)) &&
-      (!timeFilter || time.includes(timeFilter))
-    );
-  });
-
-  displayGames(filteredGames);
-});
-
-// Initial load
-fetchData().then(displayGames);
+// Charger et affich
