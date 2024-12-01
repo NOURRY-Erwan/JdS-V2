@@ -38,4 +38,7 @@ function displayGames(games) {
   });
 }
 
-// Charger et affich
+// Charger et afficher les données dès que la page est prête
+fetchData()
+  .then(displayGames)
+  .catch(error => console.error("Erreur lors du chargement des données :", error));
